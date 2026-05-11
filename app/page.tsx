@@ -1,17 +1,18 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Package, Plus, Menu, X, Send, Image, Film, Layout, Code, Wand2, Play, RefreshCw, GitCompare, Trash2, Pencil, Check, Clock, BarChart3, Network, PieChart } from 'lucide-react';
+import { MessageSquare, Package, Plus, Menu, X, Send, Image, Film, Layout, Code, Wand2, Play, RefreshCw, GitCompare, Trash2, Pencil, Check, Clock, BarChart3, Network, PieChart, Shapes, GitFork } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useChatStore } from '@/lib/store/chat-store';
 import { formatDate } from '@/lib/utils';
 
 const P5Canvas = dynamic(() => import('@/components/p5/P5Canvas'), { ssr: false });
 const D3Canvas = dynamic(() => import('@/components/d3/D3Canvas'), { ssr: false });
+const SVGCanvas = dynamic(() => import('@/components/svg/SVGCanvas'), { ssr: false });
 const CodeDiff = dynamic(() => import('@/components/p5/CodeDiff'), { ssr: false });
 
 // Types
-type RendererType = 'p5' | 'd3';
+type RendererType = 'p5' | 'd3' | 'svg';
 
 interface Artifact {
   id: string;
@@ -32,6 +33,9 @@ const extractCode = (content: string): { code: string; renderer: RendererType } 
   // Detect renderer from comment on first line
   if (code.startsWith('// renderer: d3')) {
     return { code, renderer: 'd3' };
+  }
+  if (code.startsWith('// renderer: svg')) {
+    return { code, renderer: 'svg' };
   }
   return { code, renderer: 'p5' };
 };
@@ -136,7 +140,7 @@ const GenesisApp = () => {
         chatStore.addMessage(chatId, { role: 'assistant', content: dc.aiMsg, tokens: Math.ceil(dc.aiMsg.length / 4) });
 
         // Detect renderer from code
-        const renderer: RendererType = dc.code.startsWith('// renderer: d3') ? 'd3' : 'p5';
+        const renderer: RendererType = dc.code.startsWith('// renderer: d3') ? 'd3' : dc.code.startsWith('// renderer: svg') ? 'svg' : 'p5';
 
         dummyArtifacts.push({
           id: Date.now().toString() + chatId,
@@ -169,6 +173,9 @@ const GenesisApp = () => {
     { name: 'Bar Chart', icon: BarChart3, prompt: 'Create an interactive bar chart with sample sales data using D3.js' },
     { name: 'Network', icon: Network, prompt: 'Create a force-directed network graph using D3.js' },
     { name: 'Pie Chart', icon: PieChart, prompt: 'Create an animated pie chart with sample data using D3.js' },
+    // SVG templates
+    { name: 'Logo', icon: Shapes, prompt: 'Create a modern, minimalist logo design using SVG' },
+    { name: 'Diagram', icon: GitFork, prompt: 'Create a simple flowchart diagram using SVG' },
   ];
 
   const addArtifact = (chatId: string, chatTitle: string, code: string, renderer: RendererType = 'p5') => {
@@ -562,7 +569,7 @@ const GenesisApp = () => {
                     <div className="flex flex-col items-center justify-center py-20">
                       <Package size={64} className="text-gray-300 mb-4" />
                       <h2 className="text-xl font-semibold text-gray-400 mb-2">No artifacts yet</h2>
-                      <p className="text-gray-400">Start creating with AI and your p5.js / D3.js creations will appear here</p>
+                      <p className="text-gray-400">Start creating with AI and your p5.js / D3.js / SVG creations will appear here</p>
                       <button onClick={startNewChat} className="mt-6 px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors flex items-center gap-2">
                         <Plus size={18} /> New Creation
                       </button>
@@ -579,6 +586,8 @@ const GenesisApp = () => {
                           <div className="aspect-square bg-gray-900 relative overflow-hidden">
                             {(artifact.renderer || 'p5') === 'd3'
                               ? <D3Canvas code={artifact.code} width={300} height={300} />
+                              : (artifact.renderer || 'p5') === 'svg'
+                              ? <SVGCanvas code={artifact.code} width={300} height={300} />
                               : <P5Canvas code={artifact.code} width={300} height={300} />
                             }
                             {/* Hover overlay */}
@@ -603,8 +612,8 @@ const GenesisApp = () => {
                           <div className="p-4">
                             <div className="flex items-center gap-2">
                               <h3 className="font-semibold text-sm truncate flex-1">{artifact.chatTitle}</h3>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${(artifact.renderer || 'p5') === 'd3' ? 'bg-orange-100 text-orange-700' : 'bg-purple-100 text-purple-700'}`}>
-                                {(artifact.renderer || 'p5') === 'd3' ? 'D3.js' : 'p5.js'}
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${(artifact.renderer || 'p5') === 'd3' ? 'bg-orange-100 text-orange-700' : (artifact.renderer || 'p5') === 'svg' ? 'bg-teal-100 text-teal-700' : 'bg-purple-100 text-purple-700'}`}>
+                                {(artifact.renderer || 'p5') === 'd3' ? 'D3.js' : (artifact.renderer || 'p5') === 'svg' ? 'SVG' : 'p5.js'}
                               </span>
                             </div>
                             <p className="text-xs text-gray-500 mt-1">{formatDate(artifact.createdAt)}</p>
@@ -694,10 +703,10 @@ const GenesisApp = () => {
             <div className="w-1/2 border-l border-gray-200 flex flex-col bg-gray-50">
               <div className="border-b border-gray-200 p-4 bg-white">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className={`w-6 h-6 rounded flex items-center justify-center ${activeRenderer === 'd3' ? 'bg-orange-500' : 'bg-black'}`}>
+                  <div className={`w-6 h-6 rounded flex items-center justify-center ${activeRenderer === 'd3' ? 'bg-orange-500' : activeRenderer === 'svg' ? 'bg-teal-500' : 'bg-black'}`}>
                     <Code size={14} className="text-white" />
                   </div>
-                  <h3 className="font-semibold">{activeRenderer === 'd3' ? 'D3.js Visualization' : 'Canvas Artifact'}</h3>
+                  <h3 className="font-semibold">{activeRenderer === 'd3' ? 'D3.js Visualization' : activeRenderer === 'svg' ? 'SVG Illustration' : 'Canvas Artifact'}</h3>
                   {p5Code && (
                     <button
                       onClick={handleRunCode}
@@ -736,6 +745,8 @@ const GenesisApp = () => {
                   <div className="h-full">
                     {p5Code && activeRenderer === 'd3' ? (
                       <D3Canvas code={p5Code} width={400} height={400} />
+                    ) : p5Code && activeRenderer === 'svg' ? (
+                      <SVGCanvas code={p5Code} width={400} height={400} />
                     ) : p5Code ? (
                       <P5Canvas code={p5Code} width={400} height={400} />
                     ) : (
