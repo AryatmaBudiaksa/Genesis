@@ -1,8 +1,33 @@
 // Types for AI Models
-export type AIProvider = 'resita' | 'nekolabs';
+export type AIProvider = 'litellm' | 'openai' | 'anthropic' | 'google' | 'cohere' | 'openrouter' | 'resita' | 'nekolabs';
 
-export type AIModel = 
-  // Resita API Models (only supported models)
+export type AIModel =
+  // LiteLLM Models (Primary)
+  // OpenAI via LiteLLM
+  | 'gpt-4'
+  | 'gpt-4-turbo'
+  | 'gpt-4o'
+  | 'gpt-3.5-turbo'
+  // Anthropic Claude via LiteLLM
+  | 'claude-3-opus'
+  | 'claude-3-sonnet'
+  | 'claude-3-haiku'
+  | 'claude-2.1'
+  // Google Gemini via LiteLLM
+  | 'gemini-pro'
+  | 'gemini-2.0-flash-exp'
+  | 'gemini-2.0-flash'
+  | 'gemini-flash-lite'
+  | 'gemini-1.5-pro'
+  | 'gemini-1.5-flash'
+  // Cohere via LiteLLM
+  | 'command'
+  | 'command-light'
+  // OpenRouter models
+  | 'openrouter-gpt-4'
+  | 'openrouter-claude'
+  | 'openrouter-gemini'
+  // Legacy providers (backward compatibility)
   | 'resita-aicoding'
   | 'resita-claude'
   | 'resita-chatgpt'
@@ -10,7 +35,6 @@ export type AIModel =
   | 'resita-gemini'
   | 'resita-gptlogic'
   | 'resita-venice'
-  // NekoLabs API Models
   | 'nekolabs-gpt4o'
   | 'nekolabs-gpt41'
   | 'nekolabs-gpt5mini'
@@ -66,7 +90,7 @@ export interface Chat {
 }
 
 // Types for Image Analysis
-export type AnalysisType = 
+export type AnalysisType =
   | 'object-detection'
   | 'label-detection'
   | 'text-recognition'

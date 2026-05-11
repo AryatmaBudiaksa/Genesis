@@ -1,0 +1,7 @@
+model_list:
+  - model_name: gemini-2.0-flash
+    litellm_params:
+      model: gemini/gemini-2.0-flash-exp
+      api_key: AIzaSyCdz9Fb4s9zcI-UmdFvOxVvvve6ppYywS0
+general_settings:
+  master_key: sk-litellm-your-key

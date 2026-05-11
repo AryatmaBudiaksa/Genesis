@@ -2,20 +2,10 @@ import { AIModel, AIProvider, ModelConfig } from '@/types';
 
 // API Configuration
 export const API_CONFIG = {
-  RESITA_BASE_URL: 'https://api.ferdev.my.id/ai/aicoding',
-  RESITA_API_KEY: process.env.RESITA_API_KEY || '',
-  NEKOLABS_BASE_URL: 'https://api.nekolabs.my.id',
-  NEKOLABS_IMAGE_ANALYSIS_PATH: '/ai/gpt/5',
-  THUMBSNAP_API_URL: 'https://thumbsnap.com/api/upload',
-  THUMBSNAP_API_KEY: process.env.THUMBSNAP_API_KEY || '',
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || 'AIzaSyAh9KLxuA_jZvp6UvJuxOA8mxJ678ZV9t0',
-  GEMINI_MODEL_ID: 'gemini-3-flash-preview',
-  // OpenRouter API - Requires account at https://openrouter.ai
-  // Get your API key at: https://openrouter.ai/keys
-  // Note: Free models available after registration
-  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || '',
-  OPENROUTER_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://chat.fsu.my.id',
-  OPENROUTER_SITE_NAME: 'AI Vision Chatbot',
+  // LiteLLM Configuration (Primary)
+  LITELLM_ENABLED: process.env.LITELLM_ENABLED === 'true',
+  LITELLM_BASE_URL: process.env.LITELLM_BASE_URL || '',
+  LITELLM_API_KEY: process.env.LITELLM_API_KEY || '',
 };
 
 // Image Analysis Models
@@ -69,64 +59,17 @@ export const IMAGE_ANALYSIS_MODELS = [
 ];
 
 // Available AI Models Configuration
-export const AI_MODELS: Record<AIModel, { name: string; provider: AIProvider; contextWindow: number }> = {
-  // Resita API Models (Free to use)
-  'resita-aicoding': {
-    name: 'AI Coding',
-    provider: 'resita',
-    contextWindow: 128000,
-  },
-  'resita-claude': {
-    name: 'Claude AI',
-    provider: 'resita',
-    contextWindow: 200000,
-  },
-  'resita-chatgpt': {
-    name: 'ChatGPT 4',
-    provider: 'resita',
-    contextWindow: 128000,
-  },
-  'resita-felo': {
-    name: 'Felo AI',
-    provider: 'resita',
-    contextWindow: 32000,
-  },
-  'resita-gemini': {
-    name: 'Gemini',
-    provider: 'resita',
+export const AI_MODELS: Record<string, { name: string; provider: AIProvider; contextWindow: number }> = {
+  // LiteLLM Models (configured in litellm-config.yaml)
+  'gemini-2.0-flash': {
+    name: 'Gemini 2.0 Flash',
+    provider: 'litellm',
     contextWindow: 1000000,
   },
-  'resita-gptlogic': {
-    name: 'GPT Logic',
-    provider: 'resita',
-    contextWindow: 32000,
-  },
-  'resita-venice': {
-    name: 'Venice AI',
-    provider: 'resita',
-    contextWindow: 32000,
-  },
-
-  // NekoLabs API Models (Free to use)
-  'nekolabs-gpt4o': {
-    name: 'GPT-4o',
-    provider: 'nekolabs',
-    contextWindow: 128000,
-  },
-  'nekolabs-gpt41': {
-    name: 'GPT-4.1',
-    provider: 'nekolabs',
-    contextWindow: 128000,
-  },
-  'nekolabs-gpt5mini': {
-    name: 'GPT-5 Mini',
-    provider: 'nekolabs',
-    contextWindow: 128000,
-  },
-  'nekolabs-gpt5nano': {
-    name: 'GPT-5 Nano',
-    provider: 'nekolabs',
-    contextWindow: 128000,
+  'gemini-flash-lite': {
+    name: 'Gemini Flash Lite',
+    provider: 'litellm',
+    contextWindow: 1000000,
   },
 };
 
@@ -134,8 +77,8 @@ export const AI_MODELS: Record<AIModel, { name: string; provider: AIProvider; co
 export const DEFAULT_MODEL_CONFIG: ModelConfig = {
   id: 'default',
   name: 'Default Configuration',
-  provider: 'resita',
-  model: 'resita-chatgpt',
+  provider: 'litellm',
+  model: 'gemini-2.0-flash',
   temperature: 0.7,
   maxTokens: 4096,
   topP: 1,
@@ -146,14 +89,8 @@ export const DEFAULT_MODEL_CONFIG: ModelConfig = {
 
 // Model Pricing (per 1K tokens)
 export const MODEL_PRICING = {
-  // Resita API (Free to use)
-  'resita-aicoding': { input: 0, output: 0 },
-  'resita-claude': { input: 0, output: 0 },
-  'resita-chatgpt': { input: 0, output: 0 },
-  'resita-felo': { input: 0, output: 0 },
-  'resita-gemini': { input: 0, output: 0 },
-  'resita-gptlogic': { input: 0, output: 0 },
-  'resita-venice': { input: 0, output: 0 },
+  'gemini-2.0-flash': { input: 0, output: 0 },
+  'gemini-flash-lite': { input: 0, output: 0 },
 };
 
 // Image Analysis Types
