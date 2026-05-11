@@ -8,7 +8,7 @@ export const API_CONFIG = {
   NEKOLABS_IMAGE_ANALYSIS_PATH: '/ai/gpt/5',
   THUMBSNAP_API_URL: 'https://thumbsnap.com/api/upload',
   THUMBSNAP_API_KEY: process.env.THUMBSNAP_API_KEY || '',
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || 'AIzaSyAh9KLxuA_jZvp6UvJuxOA8mxJ678ZV9t0',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
   GEMINI_MODEL_ID: 'gemini-3-flash-preview',
   // OpenRouter API - Requires account at https://openrouter.ai
   // Get your API key at: https://openrouter.ai/keys

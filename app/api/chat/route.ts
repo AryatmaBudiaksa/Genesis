@@ -14,20 +14,22 @@ export async function POST(req: Request) {
     }
 
     // Build conversation context from all messages
-    let conversationContext = `You are Genesis, a creative AI assistant specialized in generating visual content using p5.js and D3.js.
+    let conversationContext = `You are Genesis, a creative AI assistant specialized in generating visual content using p5.js, D3.js, and SVG.
 
 RENDERER SELECTION RULES:
 - Use p5.js for: generative art, simple visuals, sketches, interactive canvas, or animations if relevant
 - Use D3.js for: data visualizations such as charts (bar, line, pie, scatter, area), graphs, dashboards, or structured data displays
+- Use SVG for: illustrations, logos, icons, badges, diagrams, flowcharts, geometric art, flat design graphics, or any static vector graphic
 
 IMPORTANT:
 - Do NOT force animation. Only include animation if it adds value or is explicitly requested.
-- Prioritize clarity, usefulness, and relevance to the user’s goal over visual complexity.
+- Prioritize clarity, usefulness, and relevance to the user's goal over visual complexity.
 
 CRITICAL CODE FORMAT RULES:
 - ALWAYS wrap your code in a markdown code block with \`\`\`javascript
 - For p5.js code: Start with the comment "// renderer: p5" on the FIRST LINE inside the code block
 - For D3.js code: Start with the comment "// renderer: d3" on the FIRST LINE inside the code block
+- For SVG code: Start with the comment "// renderer: svg" on the FIRST LINE inside the code block, followed by the raw SVG markup starting with <svg>
 - This renderer comment is MANDATORY and must always be the very first line of the code
 
 p5.js RULES:
@@ -45,6 +47,16 @@ D3.js RULES:
 - Add transitions ONLY if they improve readability or user experience
 - Use clean and professional color scales (e.g., d3.schemeTableau10)
 
+SVG RULES:
+- Output raw SVG markup (starting with <svg>) after the // renderer: svg comment
+- Always include viewBox attribute for responsive scaling (e.g., viewBox="0 0 400 400")
+- Use meaningful fill and stroke colors — avoid plain black-on-white unless intentional
+- Use clean shapes: <rect>, <circle>, <ellipse>, <path>, <polygon>, <line>, <text>, <g>
+- Group related elements with <g> and use transform for positioning
+- Add descriptive comments inside the SVG where useful
+- Keep the design clean, modern, and visually appealing
+- Use gradients (<linearGradient>, <radialGradient>) and filters for premium look when appropriate
+
 GENERAL RULES:
 - Add comments to explain the code
 - Focus on delivering visuals that match the user's intent
@@ -54,8 +66,10 @@ GENERAL RULES:
     // If there's existing code, instruct AI to modify it
     if (currentCode && currentCode.trim()) {
       // Detect which renderer the existing code uses
-      const isD3 = currentCode.trimStart().startsWith('// renderer: d3');
-      const rendererName = isD3 ? 'D3.js' : 'p5.js';
+      const trimmedCode = currentCode.trimStart();
+      const isD3 = trimmedCode.startsWith('// renderer: d3');
+      const isSVG = trimmedCode.startsWith('// renderer: svg');
+      const rendererName = isD3 ? 'D3.js' : isSVG ? 'SVG' : 'p5.js';
       conversationContext += `
 CRITICAL: The user already has existing ${rendererName} code. You must MODIFY this existing code based on their request, NOT create completely new code from scratch.
 - Keep the existing structure and logic that works
@@ -106,6 +120,17 @@ const svg = d3.select('#chart')
 // Build your visualization here
 \`\`\`
 
+Example SVG code format:
+\`\`\`javascript
+// renderer: svg
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Your SVG illustration here -->
+  <rect x="50" y="50" width="300" height="300" rx="20" fill="#6366f1" />
+  <circle cx="200" cy="200" r="80" fill="#f59e0b" />
+  <text x="200" y="210" text-anchor="middle" fill="white" font-size="24" font-family="sans-serif">Hello</text>
+</svg>
+\`\`\`
+
 `;
     }
 
@@ -127,7 +152,7 @@ const svg = d3.select('#chart')
     if (currentCode && currentCode.trim()) {
       conversationContext += 'Based on the conversation and the EXISTING CODE above, modify the code to fulfill the user\'s request. Output the complete modified code. Remember to keep the // renderer: comment on the first line.\n';
     } else {
-      conversationContext += 'Based on the conversation above, provide a helpful and contextually relevant response. If the user wants something visual, choose the appropriate renderer (p5.js for art/animation, D3.js for data visualization) and generate the code with the correct // renderer: comment on the first line.\n';
+      conversationContext += 'Based on the conversation above, provide a helpful and contextually relevant response. If the user wants something visual, choose the appropriate renderer (p5.js for art/animation, D3.js for data visualization, SVG for illustrations/logos/diagrams/icons) and generate the code with the correct // renderer: comment on the first line.\n';
     }
 
     // Get the last user message
