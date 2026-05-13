@@ -2,10 +2,6 @@ import { AIModel, AIProvider, ModelConfig } from '@/types';
 
 // API Configuration
 export const API_CONFIG = {
-  RESITA_BASE_URL: 'https://api.ferdev.my.id/ai/aicoding',
-  RESITA_API_KEY: process.env.RESITA_API_KEY || '',
-  NEKOLABS_BASE_URL: 'https://api.nekolabs.my.id',
-  NEKOLABS_IMAGE_ANALYSIS_PATH: '/ai/gpt/5',
   THUMBSNAP_API_URL: 'https://thumbsnap.com/api/upload',
   THUMBSNAP_API_KEY: process.env.THUMBSNAP_API_KEY || '',
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
@@ -70,63 +66,25 @@ export const IMAGE_ANALYSIS_MODELS = [
 
 // Available AI Models Configuration
 export const AI_MODELS: Record<AIModel, { name: string; provider: AIProvider; contextWindow: number }> = {
-  // Resita API Models (Free to use)
-  'resita-aicoding': {
-    name: 'AI Coding',
-    provider: 'resita',
-    contextWindow: 128000,
-  },
-  'resita-claude': {
-    name: 'Claude AI',
-    provider: 'resita',
-    contextWindow: 200000,
-  },
-  'resita-chatgpt': {
-    name: 'ChatGPT 4',
-    provider: 'resita',
-    contextWindow: 128000,
-  },
-  'resita-felo': {
-    name: 'Felo AI',
-    provider: 'resita',
-    contextWindow: 32000,
-  },
-  'resita-gemini': {
-    name: 'Gemini',
-    provider: 'resita',
+  'gemini-native': {
+    name: 'Gemini 2.0 Flash (Native)',
+    provider: 'google',
     contextWindow: 1000000,
   },
-  'resita-gptlogic': {
-    name: 'GPT Logic',
-    provider: 'resita',
-    contextWindow: 32000,
+  'gemini-flash-lite': {
+    name: 'Gemini Flash Lite (Native)',
+    provider: 'google',
+    contextWindow: 1000000,
   },
-  'resita-venice': {
-    name: 'Venice AI',
-    provider: 'resita',
-    contextWindow: 32000,
+  'gemini-3-flash': {
+    name: 'Gemini 3 Flash (Native)',
+    provider: 'google',
+    contextWindow: 1000000,
   },
-
-  // NekoLabs API Models (Free to use)
-  'nekolabs-gpt4o': {
-    name: 'GPT-4o',
-    provider: 'nekolabs',
-    contextWindow: 128000,
-  },
-  'nekolabs-gpt41': {
-    name: 'GPT-4.1',
-    provider: 'nekolabs',
-    contextWindow: 128000,
-  },
-  'nekolabs-gpt5mini': {
-    name: 'GPT-5 Mini',
-    provider: 'nekolabs',
-    contextWindow: 128000,
-  },
-  'nekolabs-gpt5nano': {
-    name: 'GPT-5 Nano',
-    provider: 'nekolabs',
-    contextWindow: 128000,
+  'gemini-openrouter': {
+    name: 'Gemini 2.0 Flash (OpenRouter)',
+    provider: 'openrouter',
+    contextWindow: 1000000,
   },
 };
 
@@ -134,8 +92,8 @@ export const AI_MODELS: Record<AIModel, { name: string; provider: AIProvider; co
 export const DEFAULT_MODEL_CONFIG: ModelConfig = {
   id: 'default',
   name: 'Default Configuration',
-  provider: 'resita',
-  model: 'resita-chatgpt',
+  provider: 'google',
+  model: 'gemini-3-flash',
   temperature: 0.7,
   maxTokens: 4096,
   topP: 1,
@@ -146,14 +104,10 @@ export const DEFAULT_MODEL_CONFIG: ModelConfig = {
 
 // Model Pricing (per 1K tokens)
 export const MODEL_PRICING = {
-  // Resita API (Free to use)
-  'resita-aicoding': { input: 0, output: 0 },
-  'resita-claude': { input: 0, output: 0 },
-  'resita-chatgpt': { input: 0, output: 0 },
-  'resita-felo': { input: 0, output: 0 },
-  'resita-gemini': { input: 0, output: 0 },
-  'resita-gptlogic': { input: 0, output: 0 },
-  'resita-venice': { input: 0, output: 0 },
+  'gemini-native': { input: 0, output: 0 },
+  'gemini-flash-lite': { input: 0, output: 0 },
+  'gemini-3-flash': { input: 0, output: 0 },
+  'gemini-openrouter': { input: 0, output: 0 },
 };
 
 // Image Analysis Types

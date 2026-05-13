@@ -1,20 +1,11 @@
 // Types for AI Models
-export type AIProvider = 'resita' | 'nekolabs';
+export type AIProvider = 'google' | 'openrouter';
 
 export type AIModel = 
-  // Resita API Models (only supported models)
-  | 'resita-aicoding'
-  | 'resita-claude'
-  | 'resita-chatgpt'
-  | 'resita-felo'
-  | 'resita-gemini'
-  | 'resita-gptlogic'
-  | 'resita-venice'
-  // NekoLabs API Models
-  | 'nekolabs-gpt4o'
-  | 'nekolabs-gpt41'
-  | 'nekolabs-gpt5mini'
-  | 'nekolabs-gpt5nano';
+  | 'gemini-native'
+  | 'gemini-flash-lite'
+  | 'gemini-3-flash'
+  | 'gemini-openrouter';
 
 export interface ModelConfig {
   id: string;

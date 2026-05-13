@@ -53,7 +53,7 @@ const loadArtifacts = (): Artifact[] => {
       const parsed = JSON.parse(stored);
       return parsed.map((a: any) => ({ ...a, createdAt: new Date(a.createdAt) }));
     }
-  } catch {}
+  } catch { }
   return [];
 };
 
@@ -144,9 +144,9 @@ const GenesisApp = () => {
         chatStore.addMessage(chatId, { role: 'assistant', content: dc.aiMsg, tokens: Math.ceil(dc.aiMsg.length / 4) });
 
         // Detect renderer from code
-        const renderer: RendererType = dc.code.startsWith('// renderer: d3') ? 'd3' : 
-                                      dc.code.startsWith('// renderer: svg') ? 'svg' : 
-                                      dc.code.startsWith('// renderer: mermaid') ? 'mermaid' : 'p5';
+        const renderer: RendererType = dc.code.startsWith('// renderer: d3') ? 'd3' :
+          dc.code.startsWith('// renderer: svg') ? 'svg' :
+            dc.code.startsWith('// renderer: mermaid') ? 'mermaid' : 'p5';
 
         dummyArtifacts.push({
           id: Date.now().toString() + chatId,
@@ -503,9 +503,7 @@ const GenesisApp = () => {
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-gray-100 rounded-lg">
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">Powered by Gemini 3 Flash</span>
-          </div>
+
         </div>
 
         {/* Content Area */}
@@ -595,10 +593,10 @@ const GenesisApp = () => {
                             {(artifact.renderer || 'p5') === 'd3'
                               ? <D3Canvas code={artifact.code} width={300} height={300} />
                               : (artifact.renderer || 'p5') === 'svg'
-                              ? <SVGCanvas code={artifact.code} width={300} height={300} />
-                              : (artifact.renderer || 'p5') === 'mermaid'
-                              ? <MermaidCanvas code={artifact.code} width={300} height={300} />
-                              : <P5Canvas code={artifact.code} width={300} height={300} />
+                                ? <SVGCanvas code={artifact.code} width={300} height={300} />
+                                : (artifact.renderer || 'p5') === 'mermaid'
+                                  ? <MermaidCanvas code={artifact.code} width={300} height={300} />
+                                  : <P5Canvas code={artifact.code} width={300} height={300} />
                             }
                             {/* Hover overlay */}
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
