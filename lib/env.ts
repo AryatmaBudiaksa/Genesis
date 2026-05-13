@@ -40,7 +40,7 @@ export const env = {
   app: {
     url: getEnvVar('APP_URL', 'http://localhost:3000'),
     env: getEnvVar('APP_ENV', 'development'),
-    name: getEnvVar('APP_NAME', 'AI Vision Chat'),
+    name: getEnvVar('APP_NAME', 'Genesis'),
   },
 
   // AI Provider API Keys (with fallback to client-side)

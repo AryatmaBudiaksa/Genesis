@@ -353,7 +353,7 @@ Analisis gambar dengan cermat dan berikan jawaban yang komprehensif.` :
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${API_CONFIG.OPENROUTER_API_KEY}`,
             'HTTP-Referer': API_CONFIG.OPENROUTER_SITE_URL || 'http://localhost:3000',
-            'X-Title': API_CONFIG.OPENROUTER_SITE_NAME || 'AI Vision Chatbot',
+            'X-Title': API_CONFIG.OPENROUTER_SITE_NAME || 'Genesis',
           },
           body: JSON.stringify(openRouterBody),
         }

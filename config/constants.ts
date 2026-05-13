@@ -15,7 +15,7 @@ export const API_CONFIG = {
   // Note: Free models available after registration
   OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || '',
   OPENROUTER_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://chat.fsu.my.id',
-  OPENROUTER_SITE_NAME: 'AI Vision Chatbot',
+  OPENROUTER_SITE_NAME: 'Genesis',
 };
 
 // Image Analysis Models
@@ -177,7 +177,7 @@ export const FILE_UPLOAD_CONFIG = {
 
 // App Constants
 export const APP_CONFIG = {
-  name: 'AI Vision Chat',
+  name: 'Genesis',
   version: '1.0.0',
   description: 'Intelligent AI Chatbot with Image Analysis',
   maxChatHistory: 100,
@@ -198,12 +198,12 @@ export const API_ENDPOINTS = {
 
 // Local Storage Keys
 export const STORAGE_KEYS = {
-  chats: 'ai-vision-chats',
-  currentChat: 'ai-vision-current-chat',
-  modelConfig: 'ai-vision-model-config',
-  userPreferences: 'ai-vision-preferences',
-  apiKeys: 'ai-vision-api-keys',
-  folders: 'ai-vision-folders',
+  chats: 'genesis-chats',
+  currentChat: 'genesis-current-chat',
+  modelConfig: 'genesis-model-config',
+  userPreferences: 'genesis-preferences',
+  apiKeys: 'genesis-api-keys',
+  folders: 'genesis-folders',
 };
 
 // Toast Messages
