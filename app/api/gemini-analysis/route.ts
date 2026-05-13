@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { API_CONFIG, IMAGE_ANALYSIS_MODELS } from '@/config/constants';
+import { NextResponse } from 'next/server';
+import { generateText } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { IMAGE_ANALYSIS_MODELS } from '@/config/constants';
 
-export async function POST(request: NextRequest) {
+const litellm = createOpenAI({
+  baseURL: process.env.LITELLM_API_BASE || 'http://localhost:4000/v1',
+  apiKey: process.env.LITELLM_API_KEY || 'sk-genesis-master-key',
+});
+
+export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { imageUrl, prompt, analysisType, modelId = 'gemini-native' } = body;
-
-    // console.log('=== IMAGE ANALYSIS API DEBUG ===');
-    // console.log('Image URL:', imageUrl);
-    // console.log('Prompt:', prompt);
-    // console.log('Analysis Type:', analysisType);
-    // console.log('Model ID:', modelId);
-    // console.log('=================================');
 
     if (!imageUrl) {
       return NextResponse.json(
@@ -27,44 +27,6 @@ export async function POST(request: NextRequest) {
         { error: 'Invalid model ID' },
         { status: 400 }
       );
-    }
-
-    // console.log('Selected Model:', selectedModel);
-
-    // Validate API keys based on model type
-    if (selectedModel.apiType === 'gemini-native' && !API_CONFIG.GEMINI_API_KEY) {
-      return NextResponse.json(
-        { error: 'Gemini API key not configured' },
-        { status: 500 }
-      );
-    }
-
-    if (selectedModel.apiType === 'openrouter' && !API_CONFIG.OPENROUTER_API_KEY) {
-      return NextResponse.json(
-        { error: 'OpenRouter API key not configured' },
-        { status: 500 }
-      );
-    }
-
-    // Fetch the image and convert to base64 (only for Gemini Native)
-    let base64Image = '';
-    let mimeType = 'image/jpeg';
-    
-    if (selectedModel.apiType === 'gemini-native') {
-      const imageResponse = await fetch(imageUrl);
-      if (!imageResponse.ok) {
-        throw new Error('Failed to fetch image');
-      }
-
-      const imageBuffer = await imageResponse.arrayBuffer();
-      base64Image = Buffer.from(imageBuffer).toString('base64');
-      
-      // Determine mime type from URL or default to jpeg
-      mimeType = imageUrl.toLowerCase().endsWith('.png') 
-        ? 'image/png' 
-        : imageUrl.toLowerCase().endsWith('.webp')
-        ? 'image/webp'
-        : 'image/jpeg';
     }
 
     // Build prompt based on analysis type
@@ -254,169 +216,33 @@ Analisis gambar dengan cermat dan berikan jawaban yang komprehensif.` :
 }`,
     };
 
-    const analysisPrompt = prompts[analysisType] || prompts['image-description'];
+    const analysisPrompt = prompts[analysisType as keyof typeof prompts] || prompts['image-description'];
 
-    let result: string;
-
-    // Route to appropriate API based on model type
-    if (selectedModel.apiType === 'gemini-native') {
-      // Use Google Gemini Native API
-      // console.log('Using Gemini Native API...');
-
-      const requestBody = {
-        contents: [
-          {
-            role: 'user',
-            parts: [
-              {
-                text: prompt || analysisPrompt,
-              },
-              {
-                inline_data: {
-                  mime_type: mimeType,
-                  data: base64Image,
-                },
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.4,
-          topK: 32,
-          topP: 1,
-          maxOutputTokens: 2048,
-        },
-      };
-
-      const geminiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel.modelId}:generateContent?key=${API_CONFIG.GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
-
-      if (!geminiResponse.ok) {
-        const errorText = await geminiResponse.text();
-        console.error('Gemini API Error Response:', errorText);
-        throw new Error(`Gemini API error (${geminiResponse.status}): ${errorText}`);
-      }
-
-      const data = await geminiResponse.json();
-      // console.log('Gemini Native response:', JSON.stringify(data, null, 2));
-
-      if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-        console.error('Invalid Gemini response structure:', data);
-        throw new Error('Invalid response from Gemini API');
-      }
-
-      result = data.candidates[0].content.parts[0].text;
-
-    } else if (selectedModel.apiType === 'openrouter') {
-      // Use OpenRouter API (OpenAI-compatible)
-      // console.log('Using OpenRouter API with model:', selectedModel.modelId);
-
-      // OpenRouter requires public image URL, not base64
-      const openRouterBody = {
-        model: selectedModel.modelId,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: prompt || analysisPrompt,
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: imageUrl, // Use direct image URL from ThumbSnap
-                },
-              },
-            ],
-          },
-        ],
-        max_tokens: 2048,
-        temperature: 0.4,
-      };
-
-      // console.log('OpenRouter Request Body:', JSON.stringify(openRouterBody, null, 2));
-
-      const openRouterResponse = await fetch(
-        'https://openrouter.ai/api/v1/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_CONFIG.OPENROUTER_API_KEY}`,
-            'HTTP-Referer': API_CONFIG.OPENROUTER_SITE_URL || 'http://localhost:3000',
-            'X-Title': API_CONFIG.OPENROUTER_SITE_NAME || 'Genesis',
-          },
-          body: JSON.stringify(openRouterBody),
-        }
-      );
-
-      if (!openRouterResponse.ok) {
-        const errorText = await openRouterResponse.text();
-        console.error('OpenRouter API Error Response:', errorText);
-        console.error('OpenRouter Status:', openRouterResponse.status);
-        console.error('OpenRouter Headers:', JSON.stringify(Object.fromEntries(openRouterResponse.headers.entries()), null, 2));
-        
-        let errorMessage = `OpenRouter API error (${openRouterResponse.status})`;
-        let userFriendlyMessage = '';
-        
-        try {
-          const errorData = JSON.parse(errorText);
-          const providerMessage = errorData.error?.metadata?.raw;
-          errorMessage = errorData.error?.message || errorMessage;
-          
-          // Handle specific error codes with user-friendly messages
-          if (openRouterResponse.status === 401) {
-            userFriendlyMessage = '🔑 API key tidak valid. Silakan verifikasi API key di https://openrouter.ai/keys';
-          } else if (openRouterResponse.status === 429) {
-            // Rate limit error
-            if (providerMessage && providerMessage.includes('rate-limited')) {
-              userFriendlyMessage = `⏱️ Model "${selectedModel.name}" sedang terlalu banyak permintaan (rate limit).\n\n💡 Solusi:\n• Gunakan model "Gemini 2.0 Flash (Native)" sebagai gantinya\n• Atau tunggu beberapa saat dan coba lagi\n• Atau tambahkan API key Google Anda sendiri di OpenRouter`;
-            } else {
-              userFriendlyMessage = '⏱️ Terlalu banyak permintaan. Silakan tunggu beberapa saat atau gunakan model lain.';
-            }
-          } else if (openRouterResponse.status === 404) {
-            userFriendlyMessage = '❌ Model tidak ditemukan atau tidak support image input. Silakan pilih model lain.';
-          } else if (openRouterResponse.status >= 500) {
-            userFriendlyMessage = '🔧 Server error dari provider. Silakan coba model lain atau tunggu beberapa saat.';
-          }
-          
-          // Use user-friendly message if available
-          if (userFriendlyMessage) {
-            errorMessage = userFriendlyMessage;
-          }
-        } catch {
-          errorMessage = errorText || errorMessage;
-        }
-        
-        throw new Error(errorMessage);
-      }
-
-      const data = await openRouterResponse.json();
-      // console.log('OpenRouter response:', JSON.stringify(data, null, 2));
-
-      if (!data.choices || !data.choices[0]?.message?.content) {
-        console.error('Invalid OpenRouter response structure:', data);
-        throw new Error('Invalid response from OpenRouter API');
-      }
-
-      result = data.choices[0].message.content;
-    } else {
-      throw new Error('Unknown API type');
+    // Map the selected model to LiteLLM format
+    let targetModelId = 'gemini-3-flash-preview';
+    if (selectedModel.apiType === 'openrouter') {
+        targetModelId = 'openrouter-auto';
     }
+
+    const result = await generateText({
+      model: litellm(targetModelId),
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt ? prompt : analysisPrompt },
+            { type: 'image', image: imageUrl }
+          ]
+        }
+      ],
+      temperature: 0.4,
+      maxTokens: 2048,
+    });
 
     return NextResponse.json({
       success: true,
       analysisType,
-      result,
+      result: result.text,
       model: selectedModel.name,
       modelId: selectedModel.modelId,
       provider: selectedModel.provider,
@@ -425,9 +251,6 @@ Analisis gambar dengan cermat dan berikan jawaban yang komprehensif.` :
   } catch (error: any) {
     console.error('=== IMAGE ANALYSIS ERROR ===');
     console.error('Error:', error);
-    console.error('Error Message:', error.message);
-    console.error('Error Stack:', error.stack);
-    console.error('============================');
     
     return NextResponse.json(
       {

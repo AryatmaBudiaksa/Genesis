@@ -1,0 +1,41 @@
+model_list:
+  # Gemini Models
+  - model_name: gemini-3.1-flash-lite-preview
+    litellm_params:
+      model: gemini/gemini-3.1-flash-lite-preview
+      api_key: "os.environ/GEMINI_API_KEY"
+
+  - model_name: gemini-3-flash-preview
+    litellm_params:
+      model: gemini/gemini-3-flash-preview
+      api_key: "os.environ/GEMINI_API_KEY"
+
+  - model_name: gemini-2.5-flash
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: "os.environ/GEMINI_API_KEY"
+
+  - model_name: gemini-2.5-pro
+    litellm_params:
+      model: gemini/gemini-2.5-pro
+      api_key: "os.environ/GEMINI_API_KEY"
+
+  # OpenRouter Free Models
+  - model_name: openrouter-free
+    litellm_params:
+      model: openrouter/free
+      api_key: "os.environ/OPENROUTER_API_KEY"
+
+  - model_name: meta-llama/llama-3.3-70b-instruct:free
+    litellm_params:
+      model: openrouter/meta-llama/llama-3.3-70b-instruct:free
+      api_key: "os.environ/OPENROUTER_API_KEY"
+
+  - model_name: qwen/qwen3-coder:free
+    litellm_params:
+      model: openrouter/qwen/qwen3-coder:free
+      api_key: "os.environ/OPENROUTER_API_KEY"
+
+general_settings:
+  master_key: genesis
+  # database_url: "postgresql://postgres:postgres@localhost:5432/litellm" # Optional if you want UI features in production

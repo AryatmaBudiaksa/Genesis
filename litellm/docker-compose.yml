@@ -1,0 +1,12 @@
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./config.yaml:/app/config.yaml
+    command: [ "--config", "/app/config.yaml", "--port", "4000", "--num_workers", "1" ]
+    environment:
+      - LITELLM_MASTER_KEY=genesis
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
