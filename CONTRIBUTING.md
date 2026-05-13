@@ -1,6 +1,6 @@
-# Contributing to AI Vision Chat
+# Contributing to Genesis
 
-First off, thank you for considering contributing to AI Vision Chat! 🎉
+First off, thank you for considering contributing to Genesis! 🎉
 
 ## 📋 Table of Contents
 
@@ -81,7 +81,7 @@ npm run dev
 ### Project Structure
 
 ```
-chatbot-ai-vision/
+genesis/
 ├── app/            # Next.js app directory
 ├── components/     # React components
 ├── config/         # Configuration

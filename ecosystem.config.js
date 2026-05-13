@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'chatbot-ai-vision',
+      name: 'genesis',
       script: 'server.js',
       instances: 1,
       exec_mode: 'cluster',
